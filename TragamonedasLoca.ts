@@ -17,9 +17,9 @@ export class TragamonedasLoca extends JuegoBase {
     }
 
     // Tirada: sacar 5 símbolos aleatorios
-    const tirada: string[] = [];
+    let tirada: string[] = [];
     for (let i = 0; i < 5; i++) {
-      const idx = Math.floor(Math.random() * this.simbolos.length);
+      let idx = Math.floor(Math.random() * this.simbolos.length);
       tirada.push(this.simbolos[idx]);
     }
 
@@ -31,12 +31,12 @@ export class TragamonedasLoca extends JuegoBase {
     console.log();
 
     // Evaluar ganancia
-    const frec: Record<string, number> = {};
+    let frec: Record<string, number> = {};
     tirada.forEach(s => {
       frec[s] = (frec[s] || 0) + 1;
     });
 
-    const maxRepeticiones = Math.max(...Object.values(frec));
+    let maxRepeticiones = Math.max(...Object.values(frec));
     let ganancia = 0;
 
     if (maxRepeticiones === 5) {

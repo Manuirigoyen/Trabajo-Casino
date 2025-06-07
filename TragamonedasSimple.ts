@@ -17,9 +17,9 @@ export class TragamonedasSimple extends JuegoBase {
     }
 
     // Tirada: sacar 3 símbolos aleatorios
-    const tirada: string[] = [];
+    let tirada: string[] = [];
     for (let i = 0; i < 3; i++) {
-      const idx = Math.floor(Math.random() * this.simbolos.length);
+      let idx = Math.floor(Math.random() * this.simbolos.length);
       tirada.push(this.simbolos[idx]);
     }
 
@@ -31,7 +31,7 @@ export class TragamonedasSimple extends JuegoBase {
     console.log();
 
     // Evaluar ganancia: si 3 iguales gana 10x apuesta, si 2 iguales gana 2x, sino pierde
-    const unique = new Set(tirada);
+    let unique = new Set(tirada);
     let ganancia = 0;
     if (unique.size === 1) {
       ganancia = apuesta * 10;
