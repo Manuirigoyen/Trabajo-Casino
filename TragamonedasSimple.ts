@@ -24,9 +24,9 @@ export class TragamonedasSimple extends JuegoBase {
     }
 
     // Mostrar tirada con diseño
-    console.log(chalk.yellow("╔════════════════════╗"));
+    console.log(chalk.yellow("╔═════════════════════╗"));
     console.log(chalk.yellow("║ Tragamonedas Simple ║"));
-    console.log(chalk.yellow("╚════════════════════╝"));
+    console.log(chalk.yellow("╚═════════════════════╝"));
     console.log("Tirada: " + tirada.map(s => chalk.red.bold(s)).join(" | "));
     console.log();
 
@@ -46,4 +46,3 @@ export class TragamonedasSimple extends JuegoBase {
     return ganancia;
   }
 }
-

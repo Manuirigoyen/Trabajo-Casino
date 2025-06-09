@@ -25,7 +25,7 @@ export class TragamonedasLoca extends JuegoBase {
 
     // Mostrar tirada con diseño tipo fila con colores
     console.log(chalk.magenta("╔═══════════════════════╗"));
-    console.log(chalk.magenta("║   Tragamonedas Loca    ║"));
+    console.log(chalk.magenta("║   Tragamonedas Loca   ║"));
     console.log(chalk.magenta("╚═══════════════════════╝"));
     console.log("Tirada: " + tirada.map(s => chalk.cyan.bold(s)).join(" | "));
     console.log();
@@ -55,5 +55,3 @@ export class TragamonedasLoca extends JuegoBase {
     return ganancia;
   }
 }
-
-
