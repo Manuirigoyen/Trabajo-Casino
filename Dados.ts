@@ -54,7 +54,7 @@ export class Dados extends JuegoBase {
     return caras[numero.toString()];
   }
 
-  jugar(apuesta: number): number {
+  async jugar(apuesta: number): Promise<number> {
     try {
       this.validarApuesta(apuesta);
 

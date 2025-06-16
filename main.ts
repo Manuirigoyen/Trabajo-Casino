@@ -72,7 +72,8 @@ async function jugar(nombre: string) {
 
   try {
     saldo -= apuesta;
-    const ganancia = juego.jugar(apuesta);
+    // Aquí está el cambio clave: uso await porque jugar es async
+    const ganancia = await juego.jugar(apuesta);
     saldo += ganancia;
     fs.writeFileSync(archivo, saldo.toString());
 

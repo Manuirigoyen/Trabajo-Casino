@@ -38,7 +38,7 @@ export class RuletaSimple extends JuegoBase {
     console.log(chalk.yellow("══════════════════════════════════════\n"));
   }
 
-  jugar(apuestaTotal: number): number {
+  async jugar(apuestaTotal: number): Promise<number> {
     this.validarApuesta(apuestaTotal);
 
     this.mostrarTabla();
@@ -87,9 +87,6 @@ export class RuletaSimple extends JuegoBase {
     console.log(`\nSalió el número: ${chalk.bold(numeroSalio)}\n`);
 
     if (numerosElegidos.includes(numeroSalio)) {
-      // Ganancia = apuestaPorNumero * 36 por cada número acertado
-      // Pero como el número salido es uno solo, se gana solo si coincide con uno elegido
-      // Se gana 36 veces la apuesta por número, no importa cuantos números se eligieron
       const ganancia = apuestaPorNumero * 36;
       console.log(chalk.green(`¡Ganaste! 🎉 Ganás ${ganancia} (36x la apuesta por número).`));
       return ganancia;

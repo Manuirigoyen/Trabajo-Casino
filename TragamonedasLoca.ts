@@ -5,51 +5,64 @@ export class TragamonedasLoca extends JuegoBase {
   private simbolos: string[];
 
   constructor() {
-    super("Tragamonedas Loca", 10);
-    this.simbolos = ["🍒", "🍋", "🍉", "⭐", "7️⃣", "💎", "🔥"];
+    super("Tragamonedas Loca", 4);
+    this.simbolos = ["🍒", "🍋", "🍉", "⭐", "7️⃣", "💎", "🔔"];
   }
 
-  jugar(apuesta: number): number {
+  private async animarGiro(): Promise<void> {
+    for (let i = 0; i < 15; i++) {
+      const tirada = Array.from({ length: 5 }, () =>
+        chalk.magentaBright(this.simbolos[Math.floor(Math.random() * this.simbolos.length)])
+      ).join("  ");
+
+      console.clear();
+      console.log(chalk.cyanBright("╔════════════════════════════════════════════════╗"));
+      console.log(chalk.cyanBright("║") + chalk.bold.yellow("        🤪 TRAGAMONEDAS LOCA 🤪         ") + chalk.cyanBright("║"));
+      console.log(chalk.cyanBright("╠════════════════════════════════════════════════╣"));
+      console.log(chalk.cyanBright("║") + "                                              " + chalk.cyanBright("║"));
+      console.log(chalk.cyanBright("║") + "      " + tirada + "      " + chalk.cyanBright("║"));
+      console.log(chalk.cyanBright("║") + "                                              " + chalk.cyanBright("║"));
+      console.log(chalk.cyanBright("╚════════════════════════════════════════════════╝\n"));
+      await new Promise(resolve => setTimeout(resolve, 100 + i * 10)); // efecto de desaceleración
+    }
+  }
+
+  async jugar(apuesta: number): Promise<number> {
     this.validarApuesta(apuesta);
 
-    if (this.simbolos.length < 1) {
-      throw new Error("No hay símbolos definidos.");
-    }
+    await this.animarGiro(); // Mostrar la animación antes del resultado
 
-    // Tirada: sacar 5 símbolos aleatorios
-    let tirada: string[] = [];
+    const tirada: string[] = [];
     for (let i = 0; i < 5; i++) {
-      let idx = Math.floor(Math.random() * this.simbolos.length);
+      const idx = Math.floor(Math.random() * this.simbolos.length);
       tirada.push(this.simbolos[idx]);
     }
 
-    // Mostrar tirada con diseño tipo fila con colores
-console.log(chalk.whiteBright("╔══════════════════════════════════════╗"));
-console.log(chalk.whiteBright("║         🎰TRAGAMONEDAS LOCA🎰        ║"));
-console.log(chalk.whiteBright("╚══════════════════════════════════════╝"));
-    console.log("Tirada: " + tirada.map(s => chalk.cyan.bold(s)).join(" | "));
-    console.log();
+    const resultado = tirada.map(s => chalk.bold.magenta(s)).join("  ");
 
-    // Evaluar ganancia
-    let frec: Record<string, number> = {};
-    tirada.forEach(s => {
-      frec[s] = (frec[s] || 0) + 1;
-    });
+    console.clear();
+    console.log(chalk.cyanBright("╔════════════════════════════════════════════════╗"));
+    console.log(chalk.cyanBright("║") + chalk.bold.yellow("        🤪 TRAGAMONEDAS LOCA 🤪         ") + chalk.cyanBright("║"));
+    console.log(chalk.cyanBright("╠════════════════════════════════════════════════╣"));
+    console.log(chalk.cyanBright("║") + "                                              " + chalk.cyanBright("║"));
+    console.log(chalk.cyanBright("║") + "      " + resultado + "      " + chalk.cyanBright("║"));
+    console.log(chalk.cyanBright("║") + "                                              " + chalk.cyanBright("║"));
+    console.log(chalk.cyanBright("╚════════════════════════════════════════════════╝\n"));
 
-    let maxRepeticiones = Math.max(...Object.values(frec));
+    const unique = new Set(tirada);
     let ganancia = 0;
 
-    if (maxRepeticiones === 5) {
-      ganancia = apuesta * 50;
-      console.log(chalk.green("¡5 iguales! Ganaste 50x tu apuesta 🎉🎉🎉"));
-    } else if (maxRepeticiones === 4) {
-      ganancia = apuesta * 10;
-      console.log(chalk.green("¡4 iguales! Ganaste 10x tu apuesta 🎉🎉"));
-    } else if (maxRepeticiones === 3) {
-      ganancia = apuesta * 3;
-      console.log(chalk.green("¡3 iguales! Ganaste 3x tu apuesta 🎉"));
+    if (unique.size === 1) {
+      ganancia = apuesta * 20;
+      console.log(chalk.greenBright("¡Épico! 5 símbolos iguales → 20x tu apuesta 🎆"));
+    } else if (unique.size <= 2) {
+      ganancia = apuesta * 5;
+      console.log(chalk.green("¡Muy bien! 4 iguales → 5x tu apuesta 🎉"));
+    } else if (unique.size <= 3) {
+      ganancia = apuesta * 2;
+      console.log(chalk.green("¡Algo es algo! 3 iguales → 2x tu apuesta"));
     } else {
-      console.log(chalk.red("No ganaste, suerte la próxima."));
+      console.log(chalk.red("Nada por ahora... seguí intentando 💸"));
     }
 
     return ganancia;
