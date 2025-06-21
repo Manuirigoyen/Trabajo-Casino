@@ -5,6 +5,6 @@ Trello: https://trello.com/invite/b/682fa0d9428bada8f0a75c87/ATTIbd6357ac61642cd
 Excel (registro codigo): https://1drv.ms/x/c/d7e91482daf195a6/EU_pmm1G38NKnB2L0WRKTesBPy1sFthGSSgvYETTRJM0Sg
 
 
-npm install readline-sync, npm install chalk, npm install inquirer, npm install prompt-sync, npm install -g typescript, npm install -g ts-node, npm install figlet.
+Cosas que instalar para que el codigo funcione correctamente:
 
-Cosas que instalar para que el codigo funcione correctamente
+npm install readline-sync, npm install chalk, npm install inquirer, npm install prompt-sync, npm install -g typescript, npm install -g ts-node, npm install figlet.
