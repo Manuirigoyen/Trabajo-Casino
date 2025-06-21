@@ -1,91 +1,109 @@
 import { JuegoBase } from "./JuegoBase";
 import chalk from "chalk";
+import inquirer from "inquirer";
 
 export class Dados extends JuegoBase {
   constructor() {
-    super("Dados", 5);
+    super("Dados", 100);
   }
 
   private dadoASCII(numero: number): string[] {
     const caras: { [key: string]: string[] } = {
-      "1": [
-        "┌─────┐",
-        "│     │",
-        "│  ●  │",
-        "│     │",
-        "└─────┘"
-      ],
-      "2": [
-        "┌─────┐",
-        "│ ●   │",
-        "│     │",
-        "│   ● │",
-        "└─────┘"
-      ],
-      "3": [
-        "┌─────┐",
-        "│ ●   │",
-        "│  ●  │",
-        "│   ● │",
-        "└─────┘"
-      ],
-      "4": [
-        "┌─────┐",
-        "│ ● ● │",
-        "│     │",
-        "│ ● ● │",
-        "└─────┘"
-      ],
-      "5": [
-        "┌─────┐",
-        "│ ● ● │",
-        "│  ●  │",
-        "│ ● ● │",
-        "└─────┘"
-      ],
-      "6": [
-        "┌─────┐",
-        "│ ● ● │",
-        "│ ● ● │",
-        "│ ● ● │",
-        "└─────┘"
-      ]
+      "1": ["┌─────┐", "│     │", "│  ●  │", "│     │", "└─────┘"],
+      "2": ["┌─────┐", "│ ●   │", "│     │", "│   ● │", "└─────┘"],
+      "3": ["┌─────┐", "│ ●   │", "│  ●  │", "│   ● │", "└─────┘"],
+      "4": ["┌─────┐", "│ ● ● │", "│     │", "│ ● ● │", "└─────┘"],
+      "5": ["┌─────┐", "│ ● ● │", "│  ●  │", "│ ● ● │", "└─────┘"],
+      "6": ["┌─────┐", "│ ● ● │", "│ ● ● │", "│ ● ● │", "└─────┘"]
     };
     return caras[numero.toString()];
   }
 
-  async jugar(apuesta: number): Promise<number> {
+  private async sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private limpiarPantalla(): void {
+    process.stdout.write("\x1Bc");
+  }
+
+  async jugar(saldoActual: number): Promise<number> {
+    console.log(chalk.magenta("═".repeat(50)));
+    console.log(chalk.green(`💰 Saldo actual: $${saldoActual}`));
+    console.log(chalk.magenta("═".repeat(50)));
+
+    const { apuestaStr } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "apuestaStr",
+        message: chalk.cyan("? 💸 Ingrese monto a apostar (mínimo $100):"),
+        validate: (input: string) => {
+          const n = Number(input);
+          if (isNaN(n)) return "Debe ingresar un número válido";
+          if (n < this.apuestaMinima) return `La apuesta mínima es $${this.apuestaMinima}`;
+          if (n > saldoActual) return `Saldo insuficiente (actual: $${saldoActual})`;
+          return true;
+        },
+      },
+    ]);
+
+    const apuesta = Number(apuestaStr);
+
     try {
-      this.validarApuesta(apuesta);
+      for (let i = 0; i < 10; i++) {
+        const d1 = Math.floor(Math.random() * 6) + 1;
+        const d2 = Math.floor(Math.random() * 6) + 1;
 
-      const dado1 = Math.floor(Math.random() * 6) + 1;
-      const dado2 = Math.floor(Math.random() * 6) + 1;
-      const suma = dado1 + dado2;
+        const dado1 = this.dadoASCII(d1);
+        const dado2 = this.dadoASCII(d2);
 
-      console.log(chalk.blue("🎲 Lanzando dados..."));
+        this.limpiarPantalla();
+        console.log(chalk.blue("🎲 Tirando los dados...\n"));
 
-      const dado1ASCII = this.dadoASCII(dado1);
-      const dado2ASCII = this.dadoASCII(dado2);
+        for (let j = 0; j < dado1.length; j++) {
+          console.log(
+            chalk.red(dado1[j].replace(/●/g, chalk.white("●"))) +
+              "  " +
+              chalk.red(dado2[j].replace(/●/g, chalk.white("●")))
+          );
+        }
 
-      for (let i = 0; i < dado1ASCII.length; i++) {
-        // Mostramos ambos dados lado a lado 
-        const lineaDado1 = dado1ASCII[i].replace(/●/g, chalk.white("●"));
-        const lineaDado2 = dado2ASCII[i].replace(/●/g, chalk.white("●"));
-        console.log(chalk.red(lineaDado1 + "  " + lineaDado2));
+        await this.sleep(200);
+      }
+
+      const dado1Final = Math.floor(Math.random() * 6) + 1;
+      const dado2Final = Math.floor(Math.random() * 6) + 1;
+      const suma = dado1Final + dado2Final;
+
+      const final1 = this.dadoASCII(dado1Final);
+      const final2 = this.dadoASCII(dado2Final);
+
+      this.limpiarPantalla();
+      console.log(chalk.blue("🎲 Resultado final:\n"));
+
+      for (let i = 0; i < final1.length; i++) {
+        console.log(
+          chalk.red(final1[i].replace(/●/g, chalk.white("●"))) +
+            "  " +
+            chalk.red(final2[i].replace(/●/g, chalk.white("●")))
+        );
       }
 
       console.log(chalk.white(`Suma: ${suma}`));
 
+      let gananciaNeta = -apuesta; // si no gana, pierde la apuesta
+
       if (suma === 7 || suma === 11) {
-        console.log(chalk.green("¡Ganaste! Suma mágica 🎉"));
-        return apuesta * 5;
+        gananciaNeta = apuesta * 5 - apuesta; // premio menos la apuesta inicial
+        console.log(chalk.green(`🎉 ¡Ganaste! +$${apuesta * 5}`));
       } else {
-        console.log(chalk.red("No ganaste (hay que sacar entre 7 y 11), suerte la próxima."));
-        return 0;
+        console.log(chalk.red("❌ No ganaste esta vez."));
       }
+
+      return gananciaNeta;
     } catch (error) {
-      console.log(chalk.red("Error en Dados: "), (error as Error).message);
-      return 0;
+      console.log(chalk.red("❌ Error en Dados: "), (error as Error).message);
+      return 0; // En caso de error no afectamos saldo
     }
   }
 }

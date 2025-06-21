@@ -1,11 +1,12 @@
 import { JuegoBase } from "./JuegoBase";
 import chalk from "chalk";
+import inquirer from "inquirer";
 
 export class TragamonedasLoca extends JuegoBase {
   private simbolos: string[];
 
   constructor() {
-    super("Tragamonedas Loca", 4);
+    super("Tragamonedas Loca", 20); // apuesta mínima de 20
     this.simbolos = ["🍒", "🍋", "🍉", "⭐", "7️⃣", "💎", "🔔"];
   }
 
@@ -23,14 +24,30 @@ export class TragamonedasLoca extends JuegoBase {
       console.log(chalk.cyanBright("║") + "      " + tirada + "      " + chalk.cyanBright("║"));
       console.log(chalk.cyanBright("║") + "                                              " + chalk.cyanBright("║"));
       console.log(chalk.cyanBright("╚════════════════════════════════════════════════╝\n"));
-      await new Promise(resolve => setTimeout(resolve, 100 + i * 10)); // efecto de desaceleración
+
+      await new Promise(resolve => setTimeout(resolve, 100 + i * 10)); // desaceleración
     }
   }
 
-  async jugar(apuesta: number): Promise<number> {
-    this.validarApuesta(apuesta);
+  async jugar(saldoActual: number): Promise<number> {
+    const { apuestaStr } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "apuestaStr",
+        message: `💸 Ingrese monto a apostar (mínimo $${this.apuestaMinima}):`,
+        validate: (input: string) => {
+          const n = Number(input);
+          if (isNaN(n)) return "Debe ingresar un número válido";
+          if (n < this.apuestaMinima) return `La apuesta mínima es $${this.apuestaMinima}`;
+          if (n > saldoActual) return `Saldo insuficiente (actual: $${saldoActual})`;
+          return true;
+        },
+      },
+    ]);
 
-    await this.animarGiro(); // Mostrar la animación antes del resultado
+    const apuesta = Number(apuestaStr);
+
+    await this.animarGiro(); // Mostrar animación
 
     const tirada: string[] = [];
     for (let i = 0; i < 5; i++) {
@@ -50,21 +67,22 @@ export class TragamonedasLoca extends JuegoBase {
     console.log(chalk.cyanBright("╚════════════════════════════════════════════════╝\n"));
 
     const unique = new Set(tirada);
-    let ganancia = 0;
+    let gananciaNeta = 0;
 
     if (unique.size === 1) {
-      ganancia = apuesta * 20;
-      console.log(chalk.greenBright("¡Épico! 5 símbolos iguales → 20x tu apuesta 🎆"));
+      gananciaNeta = apuesta * 20 - apuesta;  // premio - apuesta
+      console.log(chalk.greenBright("¡FOA! 5 símbolos iguales → 20x tu apuesta 🎆"));
     } else if (unique.size <= 2) {
-      ganancia = apuesta * 5;
-      console.log(chalk.green("¡Muy bien! 4 iguales → 5x tu apuesta 🎉"));
+      gananciaNeta = apuesta * 5 - apuesta;
+      console.log(chalk.green("¡Que capo! 4 iguales → 5x tu apuesta 🎉"));
     } else if (unique.size <= 3) {
-      ganancia = apuesta * 2;
-      console.log(chalk.green("¡Algo es algo! 3 iguales → 2x tu apuesta"));
+      gananciaNeta = apuesta * 2 - apuesta;
+      console.log(chalk.green("¡ni tan mal! 3 iguales → 2x tu apuesta"));
     } else {
-      console.log(chalk.red("Nada por ahora... seguí intentando 💸"));
+      gananciaNeta = -apuesta;
+      console.log(chalk.red("Uh que lastima... seguí intentando 💸"));
     }
 
-    return ganancia;
+    return gananciaNeta;
   }
 }
