@@ -1,5 +1,5 @@
 import { JuegoBase } from "./JuegoBase";
-import { JuegoFactory } from "./PatronJuego";
+import { JuegoFactory } from "./JuegoFactory";
 
 export class Casino {
   private juegos: JuegoBase[] = [];
