@@ -1,9 +1,9 @@
-import { JuegoBase } from "./JuegoBase";
 import chalk from "chalk";
 import inquirer from "inquirer";
+import { Tragamonedas } from "./Tragamonedas";
 
-export class TragamonedasSimple extends JuegoBase {
-  private simbolos = ["🍒", "🍋", "🍉", "⭐", "7️⃣", "🔔"];
+export class TragamonedasSimple extends Tragamonedas { 
+  //private simbolos = ["🍒", "🍋", "🍉", "⭐", "7️⃣", "🔔"];
 
   constructor() {
     super("Tragamonedas Simple", 10);
